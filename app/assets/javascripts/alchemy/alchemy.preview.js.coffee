@@ -51,9 +51,11 @@ Alchemy.initAlchemyPreviewMode = ->
         @blurElements()
         element.classList.add('selected')
         Object.assign element.style, @getStyle('selected')
-        element.scrollIntoView
-          behavior: 'smooth'
-          block: 'start'
+        slide_parent = element.closest(".slick-slide")
+        unless slide_parent # Skip scroll for Slick sliders
+          element.scrollIntoView
+            behavior: 'smooth'
+            block: 'start'
         return
 
       # Blur all elements in preview frame.
