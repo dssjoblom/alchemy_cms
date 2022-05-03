@@ -1,5 +1,4 @@
 # frozen_string_literal: true
-pp caller_locations
 
 module Alchemy
   module BaseHelper
