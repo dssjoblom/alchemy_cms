@@ -38,8 +38,8 @@ module Alchemy
     end
 
     initializer "alchemy.userstamp" do
-      if Alchemy.user_class
-        ActiveSupport.on_load(:active_record) do
+      ActiveSupport.on_load(:active_record) do
+        if Alchemy.user_class
           Alchemy.user_class.model_stamper
           Alchemy.user_class.stampable(stamper_class_name: Alchemy.user_class.name)
         end
