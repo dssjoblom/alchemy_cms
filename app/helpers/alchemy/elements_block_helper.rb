@@ -44,7 +44,7 @@ module Alchemy
         element.content_by_name(name)
       end
 
-      deprecate content: "Use `ingredient_by_role` instead", deprecator: Alchemy::Deprecation
+      # deprecate content: "Use `ingredient_by_role` instead", deprecator: Alchemy::Deprecation
 
       # Returns the ingredient of one of the element's contents.
       #
@@ -76,7 +76,7 @@ module Alchemy
         content(name).try(:essence)
       end
 
-      deprecate essence: "Use `ingredient_by_role` instead", deprecator: Alchemy::Deprecation
+      # deprecate essence: "Use `ingredient_by_role` instead", deprecator: Alchemy::Deprecation
 
       # Return's the ingredient record by given role.
       #
