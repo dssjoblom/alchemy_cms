@@ -7,7 +7,9 @@ module Alchemy
 
     initializer "alchemy.lookup_context" do
       config.to_prepare do
-        Alchemy::LOOKUP_CONTEXT = ActionView::LookupContext.new(Rails.root.join("app", "views", "alchemy"))
+        unless defined? Alchemy::LOOKUP_CONTEXT
+          Alchemy::LOOKUP_CONTEXT = ActionView::LookupContext.new(Rails.root.join("app", "views", "alchemy"))
+        end
       end
     end
 
