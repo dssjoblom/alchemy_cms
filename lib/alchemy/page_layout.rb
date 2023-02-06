@@ -151,7 +151,14 @@ module Alchemy
       #
       def read_definitions_file
         if File.exist?(layouts_file_path)
-          YAML.safe_load(ERB.new(File.read(layouts_file_path)).result, YAML_WHITELIST_CLASSES, [], true) || []
+          if Gem::Version.new(Psych::VERSION) >= Gem::Version.new('3.1.0.pre1')
+            YAML.safe_load(ERB.new(File.read(layouts_file_path)).result,
+                           permitted_classes: YAML_WHITELIST_CLASSES,
+                           permitted_symbols: [],
+                           aliases: true) || []
+          else
+            YAML.safe_load(ERB.new(File.read(layouts_file_path)).result, YAML_WHITELIST_CLASSES, [], true) || []
+          end
         else
           raise LoadError, "Could not find page_layouts.yml file! Please run `rails generate alchemy:install`"
         end
