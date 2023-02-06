@@ -58,7 +58,7 @@ module Alchemy
         if Gem::Version.new(Psych::VERSION) >= Gem::Version.new('3.1.0.pre1')
           YAML.safe_load(ERB.new(File.read(file)).result,
                          permitted_classes: YAML_WHITELIST_CLASSES,
-                         permitetd_symbols: [],
+                         permitted_symbols: [],
                          aliases: true) || {}
         else
           YAML.safe_load(ERB.new(File.read(file)).result, YAML_WHITELIST_CLASSES, [], true) || {}
