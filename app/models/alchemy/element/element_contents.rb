@@ -173,7 +173,7 @@ module Alchemy
         contents.select(&:essence_validation_failed?)
       end
 
-      deprecate contents_with_errors: :ingredients_with_errors, deprecator: Alchemy::Deprecation
+      # deprecate contents_with_errors: :ingredients_with_errors, deprecator: Alchemy::Deprecation
 
       private
 
