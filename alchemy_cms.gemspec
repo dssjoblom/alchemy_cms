@@ -29,7 +29,7 @@ Gem::Specification.new do |gem|
     activesupport
     railties
   ].each do |rails_gem|
-    gem.add_runtime_dependency rails_gem, [">= 6.0", "< 6.2"]
+    gem.add_runtime_dependency rails_gem, [">= 6.0", "< 7.1"]
   end
 
   gem.add_runtime_dependency "active_model_serializers", ["~> 0.10.0"]
@@ -46,7 +46,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency "kaminari", ["~> 1.1"]
   gem.add_runtime_dependency "originator", ["~> 3.1"]
   gem.add_runtime_dependency "non-stupid-digest-assets", ["~> 1.0.8"]
-  gem.add_runtime_dependency "ransack", [">= 1.8", "<= 2.6.0"] # 2.4.2 dropped Ruby 2.5 support in a patch level release
+  gem.add_runtime_dependency "ransack", [">= 1.8", "< 4.0"]
   gem.add_runtime_dependency "request_store", ["~> 1.2"]
   gem.add_runtime_dependency "responders", [">= 2.0", "< 4.0"]
   gem.add_runtime_dependency "sassc-rails", ["~> 2.1"]
@@ -58,7 +58,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "capybara", ["~> 3.0"]
   gem.add_development_dependency "capybara-screenshot", ["~> 1.0"]
   gem.add_development_dependency "factory_bot_rails", ["~> 6.0"]
-  gem.add_development_dependency "puma", ["~> 5.0"]
+  gem.add_development_dependency "puma", ["~> 6.0"]
   gem.add_development_dependency "rails-controller-testing", ["~> 1.0"]
   gem.add_development_dependency "rspec-activemodel-mocks", ["~> 1.0"]
   gem.add_development_dependency "rspec-rails", [">= 4.0.0.beta2"]

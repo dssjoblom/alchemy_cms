@@ -151,6 +151,27 @@ module Alchemy
       end
     end
 
+    describe ".dom_id_class" do
+      it "defaults to Alchemy::Element::DomId" do
+        expect(described_class.dom_id_class).to eq(Alchemy::Element::DomId)
+      end
+    end
+
+    describe ".dom_id_class=" do
+      let(:dummy_dom_id) { Class.new }
+
+      around do |example|
+        default_class = described_class.dom_id_class
+        described_class.dom_id_class = dummy_dom_id
+        example.run
+        described_class.dom_id_class = default_class
+      end
+
+      it "sets the dom id class" do
+        expect(described_class.dom_id_class).to eq(dummy_dom_id)
+      end
+    end
+
     describe ".copy" do
       subject { Element.copy(element) }
 
@@ -289,6 +310,16 @@ module Alchemy
       end
     end
 
+    describe ".definitions_repository=" do
+      let(:dummy_repo) { Class.new }
+
+      it "should be able to set another repository class" do
+        expect(Element.definitions_repository = dummy_repo).to eq(dummy_repo)
+      end
+
+      after { Element.instance_variable_set(:@_definitions_repository, nil) }
+    end
+
     describe ".display_name_for" do
       it "should return the translation for the given name" do
         expect(Alchemy).to receive(:t).with("subheadline", scope: "element_names", default: "Subheadline").and_return("Überschrift")
@@ -389,7 +420,9 @@ module Alchemy
       let(:clipboard) { [{ "id" => element_1.id.to_s }, { "id" => element_2.id.to_s }] }
 
       before do
-        allow(Element).to receive(:all_from_clipboard).and_return([element_1, element_2])
+        allow(Element).to receive(:all_from_clipboard).and_return(
+          Element.where(id: [element_1, element_2].map(&:id))
+        )
       end
 
       it "return all elements from clipboard that could be placed on page" do
@@ -408,6 +441,37 @@ module Alchemy
         it "returns empty array" do
           expect(Element.all_from_clipboard_for_page(nil, page)).to eq([])
         end
+      end
+    end
+
+    describe ".all_from_clipboard_for_parent_element" do
+      subject { Element.all_from_clipboard_for_parent_element(clipboard, parent_element) }
+
+      let(:element_1) { create(:alchemy_element) }
+      let(:element_2) { create(:alchemy_element, name: "slide") }
+      let(:clipboard) { [{ "id" => element_1.id.to_s }, { "id" => element_2.id.to_s }] }
+      let(:parent_element) { create :alchemy_element, name: "slider" }
+
+      before do
+        allow(Element).to receive(:all_from_clipboard).and_return(
+          Element.where(id: [element_1, element_2].map(&:id))
+        )
+      end
+
+      it "returns all elements from clipboard that can be nested in the parent element" do
+        expect(subject).to match_array [element_2]
+      end
+
+      context "when clipboard nil" do
+        let(:clipboard) { nil }
+
+        it { is_expected.to be_empty }
+      end
+
+      context "when parent_element nil" do
+        let(:parent_element) { nil }
+
+        it { is_expected.to be_empty }
       end
     end
 
@@ -480,19 +544,19 @@ module Alchemy
 
       it "should return the translation with the translated content label" do
         expect(Alchemy).to receive(:t)
-                             .with("content_names.content", default: "Content")
-                             .and_return("Content")
+        .with("content_names.content", default: "Content")
+        .and_return("Content")
         expect(Alchemy).to receive(:t)
-                             .with("content", scope: "content_names.article", default: "Content")
-                             .and_return("Contenido")
+        .with("content", scope: "content_names.article", default: "Content")
+        .and_return("Contenido")
         expect(Alchemy).to receive(:t)
-                             .with("article.content.invalid", {
-                               scope: "content_validations",
-                               default: [:"fields.content.invalid", :"errors.invalid"],
-                               field: "Contenido",
-                             })
+        .with("article.content.invalid", {
+          scope: "content_validations",
+          default: [:"fields.content.invalid", :"errors.invalid"],
+          field: "Contenido",
+        })
         expect(element).to receive(:essence_errors)
-                             .and_return({ "content" => [:invalid] })
+        .and_return({ "content" => [:invalid] })
 
         element.essence_error_messages
       end
@@ -508,10 +572,11 @@ module Alchemy
     end
 
     describe "#dom_id" do
-      let(:element) { build_stubbed(:alchemy_element) }
+      let(:element) { build_stubbed(:alchemy_element, position: 1) }
 
-      it "returns an string from element name and id" do
-        expect(element.dom_id).to eq("#{element.name}_#{element.id}")
+      it "calls dom id class" do
+        expect(Alchemy::Element.dom_id_class).to receive(:new).with(element).and_call_original
+        element.dom_id
       end
     end
 
@@ -1103,6 +1168,15 @@ module Alchemy
         [nested_element_1, nested_element_2, nested_element_3]
       ).and_call_original
       element.reload.destroy!
+    end
+  end
+
+  describe ".available" do
+    subject { Alchemy::Element.available }
+
+    it "is deprecated" do
+      expect(Alchemy::Deprecation).to receive(:warn)
+      subject
     end
   end
 end

@@ -3,18 +3,6 @@
 require "active_record"
 
 module Alchemy #:nodoc:
-  # A bogus association that skips eager loading for essences not having an ingredient association
-  class IngredientAssociation < ActiveRecord::Associations::BelongsToAssociation
-    # Skip eager loading if called by Rails' preloader
-    def klass
-      if caller.any? { |line| line =~ /preloader\.rb/ }
-        nil
-      else
-        super
-      end
-    end
-  end
-
   module Essence #:nodoc:
     def self.included(base)
       base.extend(ClassMethods)
@@ -35,15 +23,17 @@ module Alchemy #:nodoc:
       #   The column the the validations run against.
       # @option options [String || Symbol] preview_text_column (ingredient_column)
       #   Specify the column for the preview_text method.
-      #
+      # @deprecated
       def acts_as_essence(options = {})
+        if !DEPRECATED_ESSENCE_CLASSES.include?(name)
+          Alchemy::Deprecation.warn "Please create a custom Alchemy::Ingredient for #{name} instead"
+        end
+
         register_as_essence_association!
 
         configuration = {
           ingredient_column: "body",
         }.update(options)
-
-        @_classes_with_ingredient_association ||= []
 
         class_eval <<-RUBY, __FILE__, __LINE__ + 1
           attr_writer :validation_errors
@@ -55,7 +45,7 @@ module Alchemy #:nodoc:
           has_one :element, through: :content, class_name: "Alchemy::Element"
           has_one :page,    through: :element, class_name: "Alchemy::Page"
 
-          scope :available,    -> { joins(:element).merge(Alchemy::Element.available) }
+          scope :available,    -> { joins(:element).merge(Alchemy::Element.published) }
           scope :from_element, ->(name) { joins(:element).where(Element.table_name => { name: name }) }
 
           delegate :restricted?, to: :page,    allow_nil: true
@@ -87,18 +77,6 @@ module Alchemy #:nodoc:
             alias_method :#{configuration[:ingredient_column]}, :ingredient_association
             alias_method :#{configuration[:ingredient_column]}=, :ingredient_association=
           RUBY
-
-          @_classes_with_ingredient_association << self
-        end
-      end
-
-      # Overwrite ActiveRecords method to return a bogus association class that skips eager loading
-      # for essence classes that do not have an ingredient association
-      def _reflect_on_association(name)
-        if name == :ingredient_association && !in?(@_classes_with_ingredient_association)
-          OpenStruct.new(association_class: Alchemy::IngredientAssociation)
-        else
-          super
         end
       end
 

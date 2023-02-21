@@ -309,7 +309,10 @@ module Alchemy
                   "old",
                   "all_you_can_eat_ingredients",
                   "element_with_ingredients",
+                  "element_with_ingredient_groups",
+                  "element_with_content_groups",
                 ],
+                "hint" => true,
               },
               {
                 "name" => "news",

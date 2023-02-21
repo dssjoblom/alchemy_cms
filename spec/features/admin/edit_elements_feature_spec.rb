@@ -53,16 +53,53 @@ RSpec.describe "The edit elements feature", type: :system do
       create(:alchemy_element, :with_nestable_elements, page_version: a_page.draft_version)
     end
 
-    scenario "the add element button immediately creates the nested element.", :js do
-      visit alchemy.admin_elements_path(page_version_id: element.page_version_id)
-      button = page.find(".add-nestable-element-button")
-      expect(button).to have_content "Add slide"
-      button.click
-      expect(page).to have_selector(".element-editor[data-element-name='slide']")
+    context "when clipboard has a nestable element" do
+      before do
+        allow_any_instance_of(Alchemy::Admin::ElementsController).to receive(:get_clipboard) do
+          [
+            { "id" => create(:alchemy_element, name: element.definition["nestable_elements"].first).id, "action" => "copy" },
+          ]
+        end
+      end
+
+      scenario "the add button opens add element form with the clipboard tab" do
+        visit alchemy.admin_elements_path(page_version_id: element.page_version_id)
+        button = page.find(".add-nestable-element-button")
+        expect(button).to have_content "Add slide"
+        button.click
+        expect(page).to have_select("Element")
+        expect(page).to have_link("Paste from clipboard")
+      end
+    end
+
+    context "when clipboard does not have a nestable element", :js do
+      scenario "the add element button immediately creates the nested element." do
+        visit alchemy.admin_elements_path(page_version_id: element.page_version_id)
+        button = page.find("button.add-nestable-element-button")
+        expect(button).to have_content "Add slide"
+        button.click
+        expect(page).to have_selector(".element-editor[data-element-name='slide']")
+      end
+
+      context "when a nested element is copied to clipboard" do
+        before do
+          visit alchemy.edit_admin_page_path(element.page)
+          page.find(".add-nestable-element-button").click
+          new_element = Alchemy::Element.last
+          page.find("#element_#{new_element.id} .element-header").hover
+          page.first("a[href^='/admin/clipboard/insert?remarkable_id=#{new_element.id}&remarkable_type=elements']").click
+        end
+
+        scenario "the add button now opens add element form with the clipboard tab" do
+          find("a.add-nestable-element-button").click
+          expect(page).to have_select("Element")
+          expect(page).to have_link("Paste from clipboard")
+        end
+      end
     end
   end
 
-  context "With an element having multiple nestable element defined" do
+  context "With an element having multiple nestable elements defined" do
     let!(:element) do
       create(:alchemy_element,
              :with_nestable_elements,
@@ -93,6 +130,52 @@ RSpec.describe "The edit elements feature", type: :system do
       find(".fa-clone").click
       within "#flash_notices" do
         expect(page).to have_content(/Copied Article/)
+      end
+    end
+  end
+
+  {content: "name", ingredient: "role"}.each do |type, name_field|
+    describe "With an element that has #{type} groups" do
+      let(:element) { create(:alchemy_element, page: a_page, name: "element_with_#{type}_groups") }
+
+      # Need to be on page editor rather than just admin_elements in order to have JS interaction
+      before { visit alchemy.edit_admin_page_path(element.page) }
+
+      scenario "collapsed #{type} groups shown", :js do
+        # No group content initially visible
+        expect(page).not_to have_selector(".content-group-contents", visible: true)
+
+        page.find("a#element_#{element.id}_content_group_details_header", text: "Details").click
+        # 'Details' group content visible
+        expect(page).to have_selector("#element_#{element.id}_content_group_details", visible: true)
+        within("#element_#{element.id}_content_group_details") do
+          expect(page).to have_selector("[data-#{type}-#{name_field}='description']")
+          expect(page).to have_selector("[data-#{type}-#{name_field}='key_words']")
+        end
+        expect(page).to have_selector("#element_#{element.id}_content_group_details", visible: true)
+
+        # 'Size' group content not visible
+        expect(page).not_to have_selector("#element_#{element.id}_content_group_size", visible: true)
+
+        page.find("a#element_#{element.id}_content_group_size_header", text: "Size").click
+        # 'Size' group now visible
+        expect(page).to have_selector("#element_#{element.id}_content_group_size", visible: true)
+        within("#element_#{element.id}_content_group_size") do
+          expect(page).to have_selector("[data-#{type}-#{name_field}='width']")
+          expect(page).to have_selector("[data-#{type}-#{name_field}='height']")
+        end
+
+        page.find("a#element_#{element.id}_content_group_size_header", text: "Size").click
+        # 'Size' group hidden
+        expect(page).not_to have_selector("#element_#{element.id}_content_group_size", visible: true)
+      end
+
+      scenario "expanded content groups persist between visits", :js do
+        expect(page).not_to have_selector("#element_#{element.id}_content_group_details", visible: true)
+        page.find("a#element_#{element.id}_content_group_details_header", text: "Details").click
+        expect(page).to have_selector("#element_#{element.id}_content_group_details", visible: true)
+        visit alchemy.edit_admin_page_path(element.page)
+        expect(page).to have_selector("#element_#{element.id}_content_group_details", visible: true)
       end
     end
   end

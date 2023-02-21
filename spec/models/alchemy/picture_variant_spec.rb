@@ -111,6 +111,19 @@ RSpec.describe Alchemy::PictureVariant do
       it "resizes the image inferring the height" do
         expect(subject.steps[0].arguments).to eq(["40>"])
       end
+
+      context "and crop set to true" do
+        let(:image_file) do
+          File.new(File.expand_path("../../fixtures/80x60.png", __dir__))
+        end
+        let(:options) do
+          { size: "17x", crop: true }
+        end
+
+        it "resizes the image inferring the height" do
+          expect(subject.steps[0].arguments).to eq(["17x13#"])
+        end
+      end
     end
 
     context "with no width given" do
@@ -170,6 +183,25 @@ RSpec.describe Alchemy::PictureVariant do
         step = subject.steps[0]
         expect(step.name).to eq(:encode)
         expect(step.arguments).to eq(["png", "-flatten"])
+      end
+
+      context "converted to webp" do
+        let(:options) do
+          { format: "webp" }
+        end
+
+        let(:image_file) do
+          fixture_file_upload(
+            File.expand_path("../../fixtures/animated.gif", __dir__),
+            "image/gif",
+          )
+        end
+
+        it "does not flatten the image." do
+          step = subject.steps[0]
+          expect(step.name).to eq(:encode)
+          expect(step.arguments).to eq(["webp", ""])
+        end
       end
     end
   end

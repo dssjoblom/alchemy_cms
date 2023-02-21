@@ -225,6 +225,16 @@ module Alchemy
 
     # ClassMethods (a-z)
 
+    describe ".layouts_repository=" do
+      let(:dummy_repo) { Class.new }
+
+      it "should be able to set another repository class" do
+        expect(Alchemy::Page.layouts_repository = dummy_repo).to eq(dummy_repo)
+      end
+
+      after { Alchemy::Page.instance_variable_set(:@_layouts_repository, nil) }
+    end
+
     describe ".url_path_class" do
       subject { described_class.url_path_class }
 
@@ -275,6 +285,19 @@ module Alchemy
             { "id" => page_2.id.to_s, "action" => "copy" },
           ]
           expect(Page.all_from_clipboard_for_select(clipboard, language.id)).to eq([page_1])
+        end
+      end
+
+      context "with clipboard holding layoutpages and pages." do
+        let(:page_1) { create(:alchemy_page, :layoutpage, language: language) }
+        let(:page_2) { create(:alchemy_page, language: language) }
+
+        it "should only return layoutpages" do
+          clipboard = [
+            { "id" => page_1.id.to_s, "action" => "copy" },
+            { "id" => page_2.id.to_s, "action" => "copy" },
+          ]
+          expect(Page.all_from_clipboard_for_select(clipboard, language.id, layoutpages: true)).to eq([page_1])
         end
       end
     end
@@ -695,6 +718,14 @@ module Alchemy
           expect(subject.collect { |e| e["name"] }).not_to include("unique_headline")
         end
       end
+
+      describe ".ransackable_scopes" do
+        let(:auth_object) { double }
+
+        subject { described_class.ransackable_scopes(auth_object) }
+
+        it { is_expected.to match_array([:published, :from_current_site, :layoutpages, :searchables]) }
+      end
     end
 
     describe "#available_elements_within_current_scope" do
@@ -727,7 +758,7 @@ module Alchemy
       end
     end
 
-    describe "#cache_key" do
+    describe "#cache_version" do
       let(:now) { Time.current }
       let(:last_week) { Time.current - 1.week }
 
@@ -735,7 +766,7 @@ module Alchemy
         build_stubbed(:alchemy_page, updated_at: now, published_at: last_week)
       end
 
-      subject { page.cache_key }
+      subject { page.cache_version }
 
       before do
         expect(Page).to receive(:current_preview).and_return(preview)
@@ -745,7 +776,7 @@ module Alchemy
         let(:preview) { page.id }
 
         it "uses updated_at" do
-          is_expected.to eq("alchemy/pages/#{page.id}-#{now}")
+          is_expected.to eq(now.to_s)
         end
       end
 
@@ -753,7 +784,7 @@ module Alchemy
         let(:preview) { nil }
 
         it "uses published_at" do
-          is_expected.to eq("alchemy/pages/#{page.id}-#{last_week}")
+          is_expected.to eq(last_week.to_s)
         end
       end
     end
@@ -1397,7 +1428,7 @@ module Alchemy
     end
 
     describe "#public_on=" do
-      let(:time) { Time.now }
+      let(:time) { 1.hour.ago }
 
       subject { page.public_on = time }
 
@@ -1407,6 +1438,15 @@ module Alchemy
         it "sets public_on on the public version" do
           subject
           expect(page.public_version.public_on).to be_within(1.second).of(time)
+        end
+
+        context "when the page is persisted" do
+          let(:page) { create(:alchemy_page, :public) }
+
+          it "sets public_on on the public version" do
+            page.update(public_on: time)
+            expect(page.reload.public_version.public_on).to be_within(1.second).of(time)
+          end
         end
 
         context "and the time is nil" do
@@ -1544,30 +1584,10 @@ module Alchemy
     end
 
     describe "#publish!" do
-      let(:current_time) { Time.current.change(usec: 0) }
-      let(:page) do
-        create(:alchemy_page,
-               public_on: public_on,
-               public_until: public_until,
-               published_at: published_at)
-      end
-      let(:published_at) { nil }
-      let(:public_on) { nil }
-      let(:public_until) { nil }
+      let(:page) { create(:alchemy_page) }
 
-      before do
-        allow(Time).to receive(:current).and_return(current_time)
-      end
-
-      it "enqueues publish page job" do
-        expect {
-          page.publish!
-        }.to have_enqueued_job(Alchemy::PublishPageJob)
-      end
-
-      it "sets published_at" do
-        page.publish!
-        expect(page.published_at).to eq(current_time)
+      it "enqueues a Alchemy::PublishPageJob" do
+        expect { page.publish! }.to have_enqueued_job(Alchemy::PublishPageJob)
       end
     end
 
@@ -1958,6 +1978,12 @@ module Alchemy
 
     it_behaves_like "having a hint" do
       let(:subject) { Page.new }
+    end
+
+    it "keys hint translation by page_layout" do
+      page = Page.new(page_layout: :everything)
+      expect(page).to have_hint
+      expect(page.hint).to eq Alchemy.t("page_hints.everything")
     end
 
     describe "#layout_partial_name" do

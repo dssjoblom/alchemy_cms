@@ -414,6 +414,41 @@
   }
 }
 
+.content-group {
+  width: 100%;
+  padding: $default-padding 0;
+  position: relative;
+  border-bottom: 1px solid $medium-gray;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .content-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: bold;
+    text-decoration: none;
+    padding: $default-padding 1px;
+  }
+
+  .content-group-contents {
+    display: none;
+  }
+
+  &.expanded {
+    .content-group-contents {
+      display: block;
+    }
+
+    .content-group-expand {
+      @extend .fa-angle-up;
+    }
+  }
+}
+
 .element-content-editors,
 .element-ingredient-editors {
   display: flex;
@@ -452,7 +487,7 @@
       $focus-border-color: $focus-color,
       $focus-box-shadow: 0 0 0 2px $focus-color
     );
-    width: 29px;
+    width: $form-field-addon-width;
     height: $form-field-height;
 
     &.disabled,
@@ -545,6 +580,10 @@
     font-size: 4em;
     color: $medium-gray;
     vertical-align: top;
+
+    &.error {
+      font-size: 1.2em;
+    }
   }
 
   .essence_picture_css_class {
@@ -559,6 +598,44 @@
     text-align: right;
     height: 12px;
     overflow: hidden;
+  }
+}
+
+.ingredient-editor.headline {
+  &.with-level-select {
+    input[type="text"] {
+      padding-right: $form-field-addon-width + 2 * $default-padding;
+    }
+
+    &.with-anchor {
+      input[type="text"] {
+        padding-right: 22px + $form-field-addon-width + $default-padding;
+      }
+    }
+  }
+
+  &.with-size-select {
+    input[type="text"] {
+      padding-right: $form-field-addon-width + 2 * $default-padding;
+    }
+
+    &.with-anchor {
+      input[type="text"] {
+        padding-right: 22px + $form-field-addon-width + $default-padding;
+      }
+    }
+
+    &.with-level-select {
+      input[type="text"] {
+        padding-right: 2 * ($form-field-addon-width + $default-padding);
+      }
+
+      &.with-anchor {
+        input[type="text"] {
+          padding-right: 16px + 2 * ($form-field-addon-width + $default-padding);
+        }
+      }
+    }
   }
 }
 
@@ -649,6 +726,24 @@ select.long {
   .thin_border,
   input[type="text"] {
     width: 100%;
+  }
+
+  &.linkable {
+    input[type="text"] {
+      padding-right: 2 * ($form-field-addon-width + $default-padding);
+    }
+
+    &.with-anchor {
+      input[type="text"] {
+        padding-right: 26px + 2 * ($form-field-addon-width + $default-padding);
+      }
+    }
+  }
+
+  &.with-anchor {
+    input[type="text"] {
+      padding-right: 26px;
+    }
   }
 
   &.missing {
@@ -897,8 +992,44 @@ textarea.has_tinymce {
 }
 
 .ingredient-date--label,
-.essence_date--label {
+.essence_date--label,
+.edit-ingredient-anchor-link {
   position: absolute;
-  right: 7px;
-  top: 37px;
+  right: 2 * $default-padding;
+  bottom: 15px;
+  margin: 0 !important;
+}
+
+.edit-ingredient-anchor-link {
+  right: $default-padding;
+
+  > a {
+    padding: $default-padding;
+  }
+
+  .linkable & {
+    right: 2 * $form-field-addon-width + $default-padding;
+  }
+
+  .with-size-select & {
+    right: $form-field-addon-width + $default-padding;
+  }
+
+  .with-level-select & {
+    right: $form-field-addon-width + $default-padding;
+  }
+
+  .with-level-select.with-size-select & {
+    right: 2 * $form-field-addon-width + $default-padding;
+  }
+}
+
+.ingredient-properties-link {
+  position: absolute;
+  right: 2px;
+  bottom: 15px;
+
+  > a {
+    padding: $default-padding;
+  }
 }

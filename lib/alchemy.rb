@@ -3,7 +3,26 @@
 require "alchemy/admin/preview_url"
 
 module Alchemy
-  YAML_WHITELIST_CLASSES = %w(Symbol Date Regexp)
+  YAML_PERMITTED_CLASSES = %w[Symbol Date Regexp]
+
+  DEPRECATED_ESSENCE_CLASS_MAPPING = {
+    "Alchemy::EssenceAudio" => "Alchemy::Ingredients::Audio",
+    "Alchemy::EssenceBoolean" => "Alchemy::Ingredients::Boolean",
+    "Alchemy::EssenceDate" => "Alchemy::Ingredients::Date",
+    "Alchemy::EssenceFile" => "Alchemy::Ingredients::File",
+    "Alchemy::EssenceHeadline" => "Alchemy::Ingredients::Headline",
+    "Alchemy::EssenceHtml" => "Alchemy::Ingredients::Html",
+    "Alchemy::EssenceLink" => "Alchemy::Ingredients::Link",
+    "Alchemy::EssenceNode" => "Alchemy::Ingredients::Node",
+    "Alchemy::EssencePage" => "Alchemy::Ingredients::Page",
+    "Alchemy::EssencePicture" => "Alchemy::Ingredients::Picture",
+    "Alchemy::EssenceRichtext" => "Alchemy::Ingredients::Richtext",
+    "Alchemy::EssenceSelect" => "Alchemy::Ingredients::Select",
+    "Alchemy::EssenceText" => "Alchemy::Ingredients::Text",
+    "Alchemy::EssenceVideo" => "Alchemy::Ingredients::Video",
+  }
+
+  DEPRECATED_ESSENCE_CLASSES = DEPRECATED_ESSENCE_CLASS_MAPPING.keys
 
   # Define page preview sources
   #
@@ -35,9 +54,11 @@ module Alchemy
   #           acme/preview_source: Acme Vorschau
   #
   def self.preview_sources
-    @_preview_sources ||= begin
-      Set.new << Alchemy::Admin::PreviewUrl
-    end
+    @_preview_sources ||= Set.new << Alchemy::Admin::PreviewUrl
+  end
+
+  def self.preview_sources=(sources)
+    @_preview_sources = Array(sources)
   end
 
   # Define page publish targets
@@ -63,4 +84,17 @@ module Alchemy
   def self.publish_targets
     @_publish_targets ||= Set.new
   end
+
+  # Enable full text search configuration
+  #
+  # It enables a searchable checkbox in the page form to toggle
+  # the searchable field. These information can used in a search
+  # plugin (e.g. https://github.com/AlchemyCMS/alchemy-pg_search).
+  #
+  # == Example
+  #
+  #     # config/initializers/alchemy.rb
+  #     Alchemy.enable_searchable = true
+  #
+  mattr_accessor :enable_searchable, default: false
 end

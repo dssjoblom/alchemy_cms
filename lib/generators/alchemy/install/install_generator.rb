@@ -26,7 +26,22 @@ module Alchemy
       class_option :skip_db_create,
         type: :boolean,
         default: false,
-        desc: "Skip creting the database during install."
+        desc: "Skip creating the database during install."
+
+      class_option :skip_mount,
+        type: :boolean,
+        default: false,
+        desc: "Skip mounting into routes.rb during install."
+
+      class_option :default_language_code,
+        type: :string,
+        default: "en",
+        desc: "The default language code of your site."
+
+      class_option :default_language_name,
+        type: :string,
+        default: "English",
+        desc: "The default language name of your site."
 
       source_root File.expand_path("files", __dir__)
 
@@ -34,6 +49,11 @@ module Alchemy
         header
         say "Welcome to AlchemyCMS!"
         say "Let's begin with some questions.\n\n"
+      end
+
+      def mount
+        return if options[:skip_mount]
+
         install_tasks.inject_routes(options[:auto_accept])
       end
 
@@ -98,20 +118,27 @@ module Alchemy
       end
 
       def copy_alchemy_entry_point
-        webpack_config = YAML.load_file(app_root.join("config", "webpacker.yml"))[Rails.env]
+        webpack_config = YAML.safe_load(
+          File.read(app_root.join("config", "webpacker.yml")),
+          aliases: true
+        )[Rails.env]
         copy_file "alchemy_admin.js",
           app_root.join(webpack_config["source_path"], webpack_config["source_entry_path"], "alchemy/admin.js")
       end
 
       def set_primary_language
         header
-        install_tasks.set_primary_language(options[:auto_accept])
+        install_tasks.set_primary_language(
+          code: options[:default_language_code],
+          name: options[:default_language_name],
+          auto_accept: options[:auto_accept]
+        )
       end
 
       def setup_database
         rake("db:create", abort_on_failure: true) unless options[:skip_db_create]
         # We can't invoke this rake task, because Rails will use wrong engine names otherwise
-        rake("railties:install:migrations", abort_on_failure: true)
+        rake("alchemy:install:migrations", abort_on_failure: true)
         rake("db:migrate", abort_on_failure: true)
         install_tasks.inject_seeder
         rake("db:seed", abort_on_failure: true)

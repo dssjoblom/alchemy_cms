@@ -62,7 +62,6 @@ module Alchemy
       end
 
       @page = @element.page
-      @root_page = @page.get_language_root
       if @message.valid?
         MessagesMailer.contact_form_mail(@message, mail_to, mail_from, subject).deliver
         redirect_to_success_page
@@ -122,12 +121,10 @@ module Alchemy
       if @page.blank?
         raise "Page for page_layout #{mailer_config["page_layout_name"]} not found"
       end
-
-      @root_page = @page.get_language_root
     end
 
     def message_params
-      params.require(:message).permit(*mailer_config["fields"])
+      params.require(:message).permit(*mailer_config["fields"], :contact_form_id)
     end
   end
 end

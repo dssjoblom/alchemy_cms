@@ -30,7 +30,7 @@ module Alchemy
     # Returns the rendered resized image using imagemagick directly.
     #
     def resize(size, upsample = false)
-      image_file.thumb(upsample ? size : "#{size}>")
+      image_file.thumbnail(upsample ? size : "#{size}>")
     end
 
     # Returns true if picture's width is greater than it's height
@@ -98,10 +98,10 @@ module Alchemy
       ratio = image_file_width.to_f / image_file_height
 
       if sizes[:width].zero?
-        sizes[:width] = image_file_width * ratio
+        sizes[:width] = (sizes[:height] * ratio).round.to_i
       end
       if sizes[:height].zero?
-        sizes[:height] = image_file_width / ratio
+        sizes[:height] = (sizes[:width] / ratio).round.to_i
       end
 
       sizes
@@ -119,7 +119,7 @@ module Alchemy
       if is_smaller_than?(dimensions) && upsample == false
         dimensions = reduce_to_image(dimensions)
       end
-      image_file.thumb("#{dimensions_to_string(dimensions)}#")
+      image_file.thumbnail("#{dimensions_to_string(dimensions)}#")
     end
 
     # Use imagemagick to custom crop an image. Uses -thumbnail for better performance when resizing.

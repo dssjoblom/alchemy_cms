@@ -17,8 +17,8 @@ module Alchemy
           # source and destination file names to use that engine.
           if ext != template_engine.to_s
             say_status :warning, "View uses unexpected template engine '#{ext}'.", :cyan
-            destination.gsub!(/#{template_engine}$/, ext)
-            source.gsub!(/#{template_engine}$/, ext)
+            destination = destination.gsub(/#{template_engine}$/, ext)
+            source = source.gsub(/#{template_engine}$/, ext)
           end
         end
 
@@ -33,14 +33,11 @@ module Alchemy
       end
 
       def load_alchemy_yaml(name)
-        if Gem::Version.new(Psych::VERSION) >= Gem::Version.new('3.1.0.pre1')
-          YAML.safe_load(ERB.new(File.read("#{Rails.root}/config/alchemy/#{name}")).result,
-                         permitted_classes: YAML_WHITELIST_CLASSES,
-                         permitted_symbols: [],
-                         aliases: true)
-        else
-          YAML.safe_load(ERB.new(File.read("#{Rails.root}/config/alchemy/#{name}")).result, YAML_WHITELIST_CLASSES, [], true)
-        end
+        YAML.safe_load(
+          ERB.new(File.read(Rails.root.join("config", "alchemy", name))).result,
+          permitted_classes: YAML_PERMITTED_CLASSES,
+          aliases: true,
+        )
       rescue Errno::ENOENT
         puts "\nERROR: Could not read config/alchemy/#{name} file. Please run: `rails generate alchemy:install`"
       end

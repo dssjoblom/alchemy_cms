@@ -6,6 +6,7 @@ RSpec.describe Alchemy::Ingredients::Headline do
   subject(:ingredient) do
     described_class.new(
       value: value,
+      dom_id: "se-headline",
       level: 2,
       size: 3,
     )
@@ -14,6 +15,13 @@ RSpec.describe Alchemy::Ingredients::Headline do
   let(:value) { "A headline" }
 
   it_behaves_like "an alchemy ingredient"
+  it_behaves_like "having dom ids"
+
+  describe "#dom_id" do
+    subject { ingredient.dom_id }
+
+    it { is_expected.to eq("se-headline") }
+  end
 
   describe "#level_options" do
     subject { ingredient.level_options }
@@ -39,7 +47,7 @@ RSpec.describe Alchemy::Ingredients::Headline do
         expect(ingredient).to receive(:settings).and_return(sizes: [3, 4])
       end
 
-      it { is_expected.to eq([["H3", 3], ["H4", 4]]) }
+      it { is_expected.to eq([[".h3", 3], [".h4", 4]]) }
     end
   end
 

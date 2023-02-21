@@ -27,7 +27,7 @@ module Alchemy
         end
 
         it "renders the element's view partial" do
-          is_expected.to have_selector("##{element.name}_#{element.id}")
+          is_expected.to have_selector("##{element.dom_id}")
         end
 
         context "with element view partial not found" do
@@ -54,13 +54,27 @@ module Alchemy
           is_expected.to match(/2\./)
         end
       end
+
+      context "with partial given" do
+        subject { render_element(element, partial: "alchemy/elements/other_headline") }
+
+        it "renders the differing partial" do
+          is_expected.to match(/<h3/)
+        end
+      end
     end
 
     describe "#element_dom_id" do
+      around do |example|
+        Alchemy::Deprecation.silence do
+          example.run
+        end
+      end
+
       subject { helper.element_dom_id(element) }
 
       it "should render a unique dom id for element" do
-        is_expected.to eq("#{element.name}_#{element.id}")
+        is_expected.to eq(element.dom_id)
       end
     end
 
@@ -75,8 +89,8 @@ module Alchemy
         let(:options) { {} }
 
         it "should render all elements from current pages public version." do
-          is_expected.to have_selector("##{element.name}_#{element.id}")
-          is_expected.to have_selector("##{another_element.name}_#{another_element.id}")
+          is_expected.to have_selector("##{element.dom_id}")
+          is_expected.to have_selector("##{another_element.dom_id}")
         end
 
         context "in preview_mode" do
@@ -87,8 +101,21 @@ module Alchemy
           end
 
           it "page draft version is used" do
-            is_expected.to have_selector("##{draft_element.name}_#{draft_element.id}")
+            is_expected.to have_selector("##{draft_element.dom_id}")
           end
+        end
+      end
+
+      context "with a block" do
+        subject do
+          helper.render_elements(separator: ", ") do |element|
+            element.name
+          end
+        end
+
+        it "renders the block" do
+          is_expected.to be_a(ActiveSupport::SafeBuffer)
+          is_expected.to eq("headline, article")
         end
       end
 
@@ -104,8 +131,8 @@ module Alchemy
           let!(:another_element) { create(:alchemy_element, page: another_page, page_version: another_page.public_version) }
 
           it "should render all elements from that page." do
-            is_expected.to have_selector("##{element.name}_#{element.id}")
-            is_expected.to have_selector("##{another_element.name}_#{another_element.id}")
+            is_expected.to have_selector("##{element.dom_id}")
+            is_expected.to have_selector("##{another_element.dom_id}")
           end
 
           context "in preview_mode" do
@@ -116,7 +143,7 @@ module Alchemy
             end
 
             it "page draft version is used" do
-              is_expected.to have_selector("##{draft_element.name}_#{draft_element.id}")
+              is_expected.to have_selector("##{draft_element.dom_id}")
             end
           end
         end
@@ -131,7 +158,7 @@ module Alchemy
       end
 
       context "with option separator given" do
-        let(:options) { {separator: "<hr>"} }
+        let(:options) { { separator: "<hr>" } }
 
         it "joins element partials with given string" do
           is_expected.to have_selector("hr")
@@ -144,7 +171,28 @@ module Alchemy
         end
 
         it "uses that to load elements to render" do
-          is_expected.to have_selector("#news_1001")
+          is_expected.to have_selector("#news-1")
+        end
+      end
+
+      context "with locals option" do
+        let(:options) do
+          { locals: { foo: :bar } }
+        end
+
+        it "sends locals with every #render_element call" do
+          expect(helper).to receive(:render).with(
+            partial: element.to_partial_path,
+            object: element,
+            locals: { element: element, counter: 1, options: { from_page: page, render_format: "html" }, foo: :bar },
+          )
+          expect(helper).to receive(:render).with(
+            partial: another_element.to_partial_path,
+            object: another_element,
+            locals: { element: another_element, counter: 2, options: { from_page: page, render_format: "html" }, foo: :bar },
+          )
+
+          subject
         end
       end
     end
@@ -156,7 +204,7 @@ module Alchemy
         before { assign(:preview_mode, true) }
 
         it "should return the data-alchemy-element HTML attribute for element" do
-          is_expected.to eq({"data-alchemy-element" => element.id})
+          is_expected.to eq({ "data-alchemy-element" => element.id })
         end
       end
 
@@ -201,7 +249,7 @@ module Alchemy
         end
 
         context "with a formatter lambda given" do
-          let(:options) { {formatter: ->(tags) { tags.join ", " }} }
+          let(:options) { { formatter: ->(tags) { tags.join ", " } } }
 
           it "should return a properly formatted HTML data attribute" do
             is_expected.to eq(" data-element-tags=\"peter, lustig\"")

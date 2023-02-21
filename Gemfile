@@ -3,19 +3,15 @@ source "https://rubygems.org"
 
 gemspec
 
-rails_version = ENV.fetch("RAILS_VERSION", 6.1).to_f
-# Necessary until a new 6.1.5 version has been released
-# https://github.com/rails/rails/pull/44691
-if rails_version.to_s.match?(/6.1/)
-  gem "rails", git: "https://github.com/rails/rails", branch: "6-1-stable"
-else
-  gem "rails", "~> #{rails_version}.0"
-end
+rails_version = ENV.fetch("RAILS_VERSION", 7.0).to_f
+gem "rails", "~> #{rails_version}.0"
 
 if ENV["DB"].nil? || ENV["DB"] == "sqlite"
-  gem "sqlite3", "~> 1.4.1"
+  gem "sqlite3", "~> 1.6.0"
 end
-gem "mysql2", "~> 0.5.1" if ENV["DB"] == "mysql"
+if ENV["DB"] == "mysql" || ENV["DB"] == "mariadb"
+  gem "mysql2", "~> 0.5.1"
+end
 gem "pg", "~> 1.0" if ENV["DB"] == "postgresql"
 
 group :development, :test do
@@ -45,4 +41,16 @@ group :development, :test do
     gem "rufo", require: false
     gem "brakeman", require: false
   end
+end
+
+# Ruby 3.1 split out the net-smtp gem
+# Necessary until https://github.com/mikel/mail/pull/1439
+# got merged and released.
+if Gem.ruby_version >= Gem::Version.new("3.1.0")
+  if rails_version.to_s.match?(/6.1/)
+    # Rails 6.1 needs this as well
+    gem "net-pop", "~> 0.1.0", require: false
+    gem "net-imap", "~> 0.3.1", require: false
+  end
+  gem "net-smtp", "~> 0.3.0", require: false
 end

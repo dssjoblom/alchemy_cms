@@ -36,6 +36,7 @@
 #
 
 require_dependency "alchemy/page/fixed_attributes"
+require_dependency "alchemy/page/page_layouts"
 require_dependency "alchemy/page/page_scopes"
 require_dependency "alchemy/page/page_natures"
 require_dependency "alchemy/page/page_naming"
@@ -78,6 +79,7 @@ module Alchemy
       :restricted,
       :robot_index,
       :robot_follow,
+      :searchable,
       :sitemap,
       :tag_list,
       :title,
@@ -117,7 +119,7 @@ module Alchemy
     has_many :nodes, class_name: "Alchemy::Node", inverse_of: :page
     has_many :versions, class_name: "Alchemy::PageVersion", inverse_of: :page, dependent: :destroy
     has_one :draft_version, -> { drafts }, class_name: "Alchemy::PageVersion"
-    has_one :public_version, -> { published }, class_name: "Alchemy::PageVersion"
+    has_one :public_version, -> { published }, class_name: "Alchemy::PageVersion", autosave: -> { persisted? }
 
     before_validation :set_language,
       if: -> { language.nil? }
@@ -128,6 +130,11 @@ module Alchemy
 
     before_create -> { versions.build },
       if: -> { versions.none? }
+
+    before_destroy if: -> { nodes.any? } do
+      errors.add(:nodes, :still_present)
+      throw(:abort)
+    end
 
     before_save :set_language_code,
       if: -> { language.present? }
@@ -147,6 +154,7 @@ module Alchemy
     after_update :touch_nodes
 
     # Concerns
+    include PageLayouts
     include PageScopes
     include PageNatures
     include PageNaming
@@ -262,11 +270,11 @@ module Alchemy
         where(id: clipboard.collect { |p| p["id"] })
       end
 
-      def all_from_clipboard_for_select(clipboard, language_id, layoutpage = false)
+      def all_from_clipboard_for_select(clipboard, language_id, layoutpages: false)
         return [] if clipboard.blank?
 
         clipboard_pages = all_from_clipboard(clipboard)
-        allowed_page_layouts = Alchemy::PageLayout.selectable_layouts(language_id, layoutpage)
+        allowed_page_layouts = Alchemy::Page.selectable_layouts(language_id, layoutpages: layoutpages)
         allowed_page_layout_names = allowed_page_layouts.collect { |p| p["name"] }
         clipboard_pages.select { |cp| allowed_page_layout_names.include?(cp.page_layout) }
       end
@@ -457,15 +465,10 @@ module Alchemy
       end
     end
 
-    # Creates a public version of the page.
-    #
-    # Sets the +published_at+ value to current time
-    #
-    # The +published_at+ attribute is used as +cache_key+.
+    # Creates a public version of the page in the background.
     #
     def publish!(current_time = Time.current)
-      update(published_at: current_time)
-      PublishPageJob.perform_later(self, public_on: current_time)
+      PublishPageJob.perform_later(id, public_on: current_time)
     end
 
     # Sets the public_on date on the published version
@@ -568,6 +571,12 @@ module Alchemy
     #
     def locker_name
       locker.try(:name) || Alchemy.t("unknown")
+    end
+
+    # Key hint translations by page layout, rather than the default name.
+    #
+    def hint_translation_attribute
+      page_layout
     end
 
     # Menus (aka. root nodes) this page is attached to

@@ -32,9 +32,6 @@ module Alchemy
       if: :locale_prefix_missing?,
       only: [:index, :show]
 
-    # We only need to set the +@root_page+ if we are sure that no more redirects happen.
-    before_action :set_root_page, only: [:index, :show]
-
     # Page layout callbacks need to run after all other callbacks
     before_action :run_on_page_layout_callbacks,
       if: :run_on_page_layout_callbacks?,
@@ -107,7 +104,14 @@ module Alchemy
     # If no index page and no admin users are present we show the "Welcome to Alchemy" page.
     #
     def load_index_page
-      @page ||= Language.current_root_page
+      @page ||= begin
+        Alchemy::Page.
+          contentpages.
+          language_roots.
+          where(language: Language.current).
+          includes(page_includes).
+          first
+      end
       render template: "alchemy/welcome", layout: false if signup_required?
     end
 
@@ -123,10 +127,13 @@ module Alchemy
     def load_page
       page_not_found! unless Language.current
 
-      @page ||= Language.current.pages.contentpages.find_by(
-        urlname: params[:urlname],
-        language_code: params[:locale] || Language.current.code,
-      )
+      @page ||= begin
+        Alchemy::Page.
+          contentpages.
+          where(language: Language.current).
+          includes(page_includes).
+          find_by(urlname: params[:urlname])
+      end
     end
 
     def enforce_locale
@@ -199,10 +206,6 @@ module Alchemy
       end
     end
 
-    def set_root_page
-      @root_page ||= Language.current_root_page
-    end
-
     def signup_required?
       if Alchemy.user_class.respond_to?(:admins)
         Alchemy.user_class.admins.empty? && @page.nil?
@@ -215,12 +218,12 @@ module Alchemy
     #
     # IMPORTANT:
     #
-    # If your user does not have a +cache_key+ method (i.e. it's not an ActiveRecord model),
+    # If your user does not have a +cache_key_with_version+ method (i.e. it's not an ActiveRecord model),
     # you have to ensure to implement it and return a unique identifier for that particular user.
     # Otherwise all users will see the same cached page, regardless of user's state.
     #
     def page_etag
-      @page.cache_key + current_alchemy_user.try(:cache_key).to_s
+      [@page, current_alchemy_user]
     end
 
     # We only render the page if either the cache is disabled for this page
@@ -240,6 +243,10 @@ module Alchemy
 
     def page_not_found!
       not_found_error!("Alchemy::Page not found \"#{request.fullpath}\"")
+    end
+
+    def page_includes
+      Alchemy::EagerLoading.page_includes(version: :public_version)
     end
   end
 end

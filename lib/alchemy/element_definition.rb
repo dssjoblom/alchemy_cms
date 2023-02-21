@@ -48,21 +48,11 @@ module Alchemy
       #
       def read_definitions_file
         if File.exist?(definitions_file_path)
-          if Gem::Version.new(Psych::VERSION) >= Gem::Version.new('3.1.0.pre1')
-            YAML.safe_load(
-              ERB.new(File.read(definitions_file_path)).result,
-              permitted_classes: YAML_WHITELIST_CLASSES,
-              permitted_symbols: [],
-              aliases: true
-            ) || []
-          else
-            YAML.safe_load(
-              ERB.new(File.read(definitions_file_path)).result,
-              YAML_WHITELIST_CLASSES,
-              [],
-              true
-            ) || []
-          end
+          YAML.safe_load(
+            ERB.new(File.read(definitions_file_path)).result,
+            permitted_classes: YAML_PERMITTED_CLASSES,
+            aliases: true,
+          ) || []
         else
           raise LoadError,
                 "Could not find elements.yml file! Please run `rails generate alchemy:install`"

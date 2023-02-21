@@ -1,3 +1,175 @@
+# Changelog
+
+## 6.1.1 (2023-01-23)
+
+- Re-introduce deleted methods [#2422](https://github.com/AlchemyCMS/alchemy_cms/pull/2422) ([tvdeyen](https://github.com/tvdeyen))
+- Add searchable field to page (Alchemy 6.1) [#2420](https://github.com/AlchemyCMS/alchemy_cms/pull/2420) ([kulturbande](https://github.com/kulturbande))
+
+## 6.1.0 (2023-01-19)
+
+### Features
+
+- Add page layouts repository class option [#2410](https://github.com/AlchemyCMS/alchemy_cms/pull/2410) ([tvdeyen](https://github.com/tvdeyen))
+- Add element definitions repository class option [#2409](https://github.com/AlchemyCMS/alchemy_cms/pull/2409) ([tvdeyen](https://github.com/tvdeyen))
+- Allow to set preview_sources [#2407](https://github.com/AlchemyCMS/alchemy_cms/pull/2407) ([tvdeyen](https://github.com/tvdeyen))
+- Allow to add anchors to ingredients [#2395](https://github.com/AlchemyCMS/alchemy_cms/pull/2395) ([tvdeyen](https://github.com/tvdeyen))
+- Add a error logger exception handler [#2387](https://github.com/AlchemyCMS/alchemy_cms/pull/2387) ([tvdeyen](https://github.com/tvdeyen))
+- Add a element DOM id class [#2373](https://github.com/AlchemyCMS/alchemy_cms/pull/2373) ([tvdeyen](https://github.com/tvdeyen))
+
+### Changes
+
+- Remove old jasmine based javascript specs [#2400](https://github.com/AlchemyCMS/alchemy_cms/pull/2400) ([tvdeyen](https://github.com/tvdeyen))
+- Update bundled Tinymce to 4.9.11 [#2399](https://github.com/AlchemyCMS/alchemy_cms/pull/2399) ([tvdeyen](https://github.com/tvdeyen))
+- Add Headline size and level selects as input addons [#2398](https://github.com/AlchemyCMS/alchemy_cms/pull/2398) ([tvdeyen](https://github.com/tvdeyen))
+- Remove Element.available scope [#2372](https://github.com/AlchemyCMS/alchemy_cms/pull/2372) ([tvdeyen](https://github.com/tvdeyen))
+- Remove element_dom_id helper [#2369](https://github.com/AlchemyCMS/alchemy_cms/pull/2369) ([tvdeyen](https://github.com/tvdeyen))
+- Use position for element dom_id [#2368](https://github.com/AlchemyCMS/alchemy_cms/pull/2368) ([tvdeyen](https://github.com/tvdeyen))
+- Disallow deleting pages if still attached to menu node [#2338](https://github.com/AlchemyCMS/alchemy_cms/pull/2338) ([afdev82](https://github.com/afdev82))
+
+### Fixes
+
+- Add `:contact_form_id` to `messages` params in `messages_controller` [#2403](https://github.com/AlchemyCMS/alchemy_cms/pull/2403) ([chiperific](https://github.com/chiperific))
+- Do not create thumbs for invalid pictures [#2386](https://github.com/AlchemyCMS/alchemy_cms/pull/2386) ([tvdeyen](https://github.com/tvdeyen))
+
+### Misc
+
+- [ruby - main] Upgrade sqlite3 to version 1.6.0 [#2408](https://github.com/AlchemyCMS/alchemy_cms/pull/2408) ([depfu](https://github.com/apps/depfu))
+- [ruby - main] Upgrade puma to version 6.0.1 [#2404](https://github.com/AlchemyCMS/alchemy_cms/pull/2404) ([depfu](https://github.com/apps/depfu))
+- CI: Update brakeman scan [#2390](https://github.com/AlchemyCMS/alchemy_cms/pull/2390) ([tvdeyen](https://github.com/tvdeyen))
+- [ruby - main] Upgrade net-imap to version 0.3.1 [#2379](https://github.com/AlchemyCMS/alchemy_cms/pull/2379) ([depfu](https://github.com/apps/depfu))
+- CI: Try ubuntu-latest [#2378](https://github.com/AlchemyCMS/alchemy_cms/pull/2378) ([tvdeyen](https://github.com/tvdeyen))
+- [ruby - main] Upgrade sqlite3 to version 1.5.0 [#2374](https://github.com/AlchemyCMS/alchemy_cms/pull/2374) ([depfu](https://github.com/apps/depfu))
+- [js] Upgrade babel-jest to version 29.0.1 [#2362](https://github.com/AlchemyCMS/alchemy_cms/pull/2362) ([depfu](https://github.com/apps/depfu))
+- Use released Rails gems again for local testing [#2355](https://github.com/AlchemyCMS/alchemy_cms/pull/2355) ([tvdeyen](https://github.com/tvdeyen))
+- [js] Upgrade babel-jest to version 28.0.2 [#2324](https://github.com/AlchemyCMS/alchemy_cms/pull/2324) ([depfu](https://github.com/apps/depfu))
+
+## 6.0.12 (2022-11-19)
+
+- More installer options [#2385](https://github.com/AlchemyCMS/alchemy_cms/pull/2385) ([tvdeyen](https://github.com/tvdeyen))
+- Fix custom module installer [#2384](https://github.com/AlchemyCMS/alchemy_cms/pull/2384) ([tvdeyen](https://github.com/tvdeyen))
+- Always provide format with attachment URLs [#2383](https://github.com/AlchemyCMS/alchemy_cms/pull/2383) ([mamhoff](https://github.com/mamhoff))
+
+## 6.0.11 (2022-09-22)
+
+- Do not touch pages when toggling element [#2377](https://github.com/AlchemyCMS/alchemy_cms/pull/2377) ([tvdeyen](https://github.com/tvdeyen))
+- Remove unused Kaminari::Helpers::Tag hack [#2376](https://github.com/AlchemyCMS/alchemy_cms/pull/2376) ([tvdeyen](https://github.com/tvdeyen))
+
+## 6.0.10 (2022-09-04)
+
+- Deprecate essence classes [#2371](https://github.com/AlchemyCMS/alchemy_cms/pull/2371) ([tvdeyen](https://github.com/tvdeyen))
+- Deprecate full_url_for_element helper [#2368](https://github.com/AlchemyCMS/alchemy_cms/pull/2368) ([tvdeyen](https://github.com/tvdeyen))
+- Deprecate element_dom_id helper [#2368](https://github.com/AlchemyCMS/alchemy_cms/pull/2368) ([tvdeyen](https://github.com/tvdeyen))
+- Use position instead of id for element dom_id [#2368](https://github.com/AlchemyCMS/alchemy_cms/pull/2368) ([tvdeyen](https://github.com/tvdeyen))
+- Fix ingredient boolean preview text [#2367](https://github.com/AlchemyCMS/alchemy_cms/pull/2367) ([tvdeyen](https://github.com/tvdeyen))
+- Decide locale prefix with page language in show_alchemy_page_url helper [#2366](https://github.com/AlchemyCMS/alchemy_cms/pull/2366) ([tvdeyen](https://github.com/tvdeyen))
+- Use cache_key_with_version in page_etag [#2365](https://github.com/AlchemyCMS/alchemy_cms/pull/2365) ([tvdeyen](https://github.com/tvdeyen))
+- Fix author edit_content permissions [#2364](https://github.com/AlchemyCMS/alchemy_cms/pull/2364) ([tvdeyen](https://github.com/tvdeyen))
+
+## 6.0.9 (2022-07-25)
+
+- Allow Site managers to remove page locks [#2360](https://github.com/AlchemyCMS/alchemy_cms/pull/2360) ([mamhoff](https://github.com/mamhoff))
+- Add tags to Alchemy::EagerLoading [#2359](https://github.com/AlchemyCMS/alchemy_cms/pull/2359) ([mamhoff](https://github.com/mamhoff))
+- Delete Gutentag Taggings in Alchemy::DeleteElements [#2358](https://github.com/AlchemyCMS/alchemy_cms/pull/2358) ([mamhoff](https://github.com/mamhoff))
+- Fix PictureTransformations#inferred_sizes_from_string [#2356](https://github.com/AlchemyCMS/alchemy_cms/pull/2356) ([mamhoff](https://github.com/mamhoff))
+- add playsinline attribute to ingredient and essence [#2351](https://github.com/AlchemyCMS/alchemy_cms/pull/2351) ([pascalbetz](https://github.com/pascalbetz))
+
+## 6.0.8 (2022-06-10)
+
+- Fix admin page tree links after update [#2348](https://github.com/AlchemyCMS/alchemy_cms/pull/2348) ([tvdeyen](https://github.com/tvdeyen))
+- Fix initial selection of internal page link select [#2346](https://github.com/AlchemyCMS/alchemy_cms/pull/2346) ([tvdeyen](https://github.com/tvdeyen))
+
+## 6.0.7 (2022-06-04)
+
+- Eagerly generate thumbs for srcset images in task as well [#2344](https://github.com/AlchemyCMS/alchemy_cms/pull/2344) ([tvdeyen](https://github.com/tvdeyen))
+- Use HashWithIndifferentAccess for Page definition.  Key hint translation by page_layout [#2343](https://github.com/AlchemyCMS/alchemy_cms/pull/2343) ([dbwinger](https://github.com/dbwinger))
+
+## 6.0.6 (2022-05-30)
+
+- Add task to eagerly generate ingredients pictures thumbnails [#2342](https://github.com/AlchemyCMS/alchemy_cms/pull/2342) ([tvdeyen](https://github.com/tvdeyen))
+- Add spec for ingredients migrator; fix preloading in Rails 6.1+ [#2340](https://github.com/AlchemyCMS/alchemy_cms/pull/2340) ([mamhoff](https://github.com/mamhoff))
+- Extract element ingredient migrator [#2337](https://github.com/AlchemyCMS/alchemy_cms/pull/2337) ([tvdeyen](https://github.com/tvdeyen))
+- Update published_at only after page has been published. [#2331](https://github.com/AlchemyCMS/alchemy_cms/pull/2331) ([pascalbetz](https://github.com/pascalbetz))
+- Add element groups functionality for cleaning up editors [#2124](https://github.com/AlchemyCMS/alchemy_cms/pull/2124) ([dbwinger](https://github.com/dbwinger))
+- Eagerload at the controller or job layer [#2313](https://github.com/AlchemyCMS/alchemy_cms/pull/2313) ([mamhoff](https://github.com/mamhoff))
+
+## 6.0.5 (2022-05-11)
+
+- Extract element ingredient migrator [#2337](https://github.com/AlchemyCMS/alchemy_cms/pull/2337) ([tvdeyen](https://github.com/tvdeyen))
+
+## 6.0.4 (2022-05-06)
+
+- Add support for Rails' recycable cache keys [#2334](https://github.com/AlchemyCMS/alchemy_cms/pull/2334) ([tvdeyen](https://github.com/tvdeyen))
+- Make Alchemy::Content::Factory reloadable [#2333](https://github.com/AlchemyCMS/alchemy_cms/pull/2333) ([tvdeyen](https://github.com/tvdeyen))
+- Wrap the result of rendering into an ActiveSupport::SafeBuffer [#2332](https://github.com/AlchemyCMS/alchemy_cms/pull/2332) ([mamhoff](https://github.com/mamhoff))
+- Override Alchemy::Page.ransackable_scopes [#2328](https://github.com/AlchemyCMS/alchemy_cms/pull/2328) ([mamhoff](https://github.com/mamhoff))
+- Default Link Format matcher: Allow tel: protocol [#2327](https://github.com/AlchemyCMS/alchemy_cms/pull/2327) ([mamhoff](https://github.com/mamhoff))
+
+## 6.0.3 (2022-05-02)
+
+- Add Support for MariaDB [#2326](https://github.com/AlchemyCMS/alchemy_cms/pull/2326) ([mamhoff](https://github.com/mamhoff))
+- Fix Alchemy::Content::Factory module definition [#2325](https://github.com/AlchemyCMS/alchemy_cms/pull/2325) ([tvdeyen](https://github.com/tvdeyen))
+
+## 6.0.2 (2022-04-27)
+
+- Remove JSON decode from ingredient data store [#2323](https://github.com/AlchemyCMS/alchemy_cms/pull/2323) ([tvdeyen](https://github.com/tvdeyen))
+- Eagerload at the controller or job layer [#2313](https://github.com/AlchemyCMS/alchemy_cms/pull/2313) ([mamhoff](https://github.com/mamhoff))
+
+## 6.0.1 (2022-04-26)
+
+- Allow passing a different partial to `render_element` [#2322](https://github.com/AlchemyCMS/alchemy_cms/pull/2322) ([mamhoff](https://github.com/mamhoff))
+- Allow render_elements to take a block [#2321](https://github.com/AlchemyCMS/alchemy_cms/pull/2321) ([mamhoff](https://github.com/mamhoff))
+- Remove old unused root_page ivar [#2320](https://github.com/AlchemyCMS/alchemy_cms/pull/2320) ([tvdeyen](https://github.com/tvdeyen))
+- Raise on non-existing locale [#2319](https://github.com/AlchemyCMS/alchemy_cms/pull/2319) ([mamhoff](https://github.com/mamhoff))
+- chore: Remove unnecessary puts from spec [#2318](https://github.com/AlchemyCMS/alchemy_cms/pull/2318) ([tvdeyen](https://github.com/tvdeyen))
+- Fix gif resizing [#2315](https://github.com/AlchemyCMS/alchemy_cms/pull/2315) ([kulturbande](https://github.com/kulturbande))
+- Refactor: Use page version's element repository rather than a new one [#2312](https://github.com/AlchemyCMS/alchemy_cms/pull/2312) ([mamhoff](https://github.com/mamhoff))
+- Deprecate Alchemy::Element.available [#2309](https://github.com/AlchemyCMS/alchemy_cms/pull/2309) ([mamhoff](https://github.com/mamhoff))
+- Explicitly set "store" for MariaDB [#2308](https://github.com/AlchemyCMS/alchemy_cms/pull/2308) ([mamhoff](https://github.com/mamhoff))
+- Set preview mode earlier [#2307](https://github.com/AlchemyCMS/alchemy_cms/pull/2307) ([mamhoff](https://github.com/mamhoff))
+- Fix updating the public_on date on persisted pages [#2305](https://github.com/AlchemyCMS/alchemy_cms/pull/2305) ([mamhoff](https://github.com/mamhoff))
+- Allow opting out of Turbolinks in non-Alchemy controllers [#2302](https://github.com/AlchemyCMS/alchemy_cms/pull/2302) ([dssjoblom](https://github.com/dssjoblom))
+- Explicitly validate uniqueness without case sensitivity [#2300](https://github.com/AlchemyCMS/alchemy_cms/pull/2300) ([mamhoff](https://github.com/mamhoff))
+- Fix frozen string error when mixing template engines [#2299](https://github.com/AlchemyCMS/alchemy_cms/pull/2299) ([gr8bit](https://github.com/gr8bit))
+- Do not flatten gifs if converted to webp [#2293](https://github.com/AlchemyCMS/alchemy_cms/pull/2293) ([tvdeyen](https://github.com/tvdeyen))
+- Allow pasting into parent element with only one nested element type [#2292](https://github.com/AlchemyCMS/alchemy_cms/pull/2292) ([dbwinger](https://github.com/dbwinger))
+- Restrict Node select to the site/language of the page being edited [#2277](https://github.com/AlchemyCMS/alchemy_cms/pull/2277) ([dbwinger](https://github.com/dbwinger))
+- Add Ruby 3.1 support [#2229](https://github.com/AlchemyCMS/alchemy_cms/pull/2229) ([tvdeyen](https://github.com/tvdeyen))
+
+## 6.0.0 (2022-04-11)
+
+- [ruby - main] Allow ransack version 3.0.1 [#2287](https://github.com/AlchemyCMS/alchemy_cms/pull/2287) ([depfu](https://github.com/apps/depfu))
+- Fix image loader [#2285](https://github.com/AlchemyCMS/alchemy_cms/pull/2285) ([tvdeyen](https://github.com/tvdeyen))
+- Don't delete locals in render_element so they can be used by all elements in render_elements [#2283](https://github.com/AlchemyCMS/alchemy_cms/pull/2283) ([dbwinger](https://github.com/dbwinger))
+- Don't hardcode URLs in Javascript  [#2282](https://github.com/AlchemyCMS/alchemy_cms/pull/2282) ([dssjoblom](https://github.com/dssjoblom))
+- [ruby - main] Allow ransack 3.0.0 [#2278](https://github.com/AlchemyCMS/alchemy_cms/pull/2278) ([depfu](https://github.com/apps/depfu))
+- Show site and language name on page select in Link dialog [#2276](https://github.com/AlchemyCMS/alchemy_cms/pull/2276) ([dbwinger](https://github.com/dbwinger))
+- Allow webp as image file format [#2274](https://github.com/AlchemyCMS/alchemy_cms/pull/2274) ([tvdeyen](https://github.com/tvdeyen))
+- Rails 7 Support [#2225](https://github.com/AlchemyCMS/alchemy_cms/pull/2225) ([tvdeyen](https://github.com/tvdeyen))
+- Support AR enums in resource models [#2210](https://github.com/AlchemyCMS/alchemy_cms/pull/2210) ([robinboening](https://github.com/robinboening))
+
+## 6.0.0-rc7 (2022-03-28)
+
+- fix(Sitemap): Use response data [#2272](https://github.com/AlchemyCMS/alchemy_cms/pull/2272) ([tvdeyen](https://github.com/tvdeyen))
+- Revert "Ajax: Send method override" [#2271](https://github.com/AlchemyCMS/alchemy_cms/pull/2271) ([tvdeyen](https://github.com/tvdeyen))
+- ImageLoader: Add error handling [#2270](https://github.com/AlchemyCMS/alchemy_cms/pull/2270) ([tvdeyen](https://github.com/tvdeyen))
+- Check presence of page_public checkbox [#2269](https://github.com/AlchemyCMS/alchemy_cms/pull/2269) ([afdev82](https://github.com/afdev82))
+- Use lodash-es instead of lodash [#2268](https://github.com/AlchemyCMS/alchemy_cms/pull/2268) ([afdev82](https://github.com/afdev82))
+- CI: Update stale workflow [#2267](https://github.com/AlchemyCMS/alchemy_cms/pull/2267) ([tvdeyen](https://github.com/tvdeyen))
+- Allow to skip db:create during install task [#2266](https://github.com/AlchemyCMS/alchemy_cms/pull/2266) ([tvdeyen](https://github.com/tvdeyen))
+- CI: Fix mysql builds [#2263](https://github.com/AlchemyCMS/alchemy_cms/pull/2263) ([tvdeyen](https://github.com/tvdeyen))
+- Fix new Sitemap [#2262](https://github.com/AlchemyCMS/alchemy_cms/pull/2262) ([tvdeyen](https://github.com/tvdeyen))
+- [ruby - main] Allow ransack version 2.6.0 [#2259](https://github.com/AlchemyCMS/alchemy_cms/pull/2259) ([depfu](https://github.com/apps/depfu))
+- Allow all pages in API again [#2258](https://github.com/AlchemyCMS/alchemy_cms/pull/2258) ([tvdeyen](https://github.com/tvdeyen))
+- Fix setting default value of ingredients [#2257](https://github.com/AlchemyCMS/alchemy_cms/pull/2257) ([tvdeyen](https://github.com/tvdeyen))
+- Eager load in PageTree serializer [#2256](https://github.com/AlchemyCMS/alchemy_cms/pull/2256) ([tvdeyen](https://github.com/tvdeyen))
+- Revert "Merge pull request #2203 from tvdeyen/switch-to-cuprite" [#2255](https://github.com/AlchemyCMS/alchemy_cms/pull/2255) ([tvdeyen](https://github.com/tvdeyen))
+- [js] New version of flatpickr (4.6.10) broke the build [#2254](https://github.com/AlchemyCMS/alchemy_cms/pull/2254) ([depfu](https://github.com/apps/depfu))
+- New sortable page tree [#2252](https://github.com/AlchemyCMS/alchemy_cms/pull/2252) ([tvdeyen](https://github.com/tvdeyen))
+- Use minor versions for ruby version matrix [#2251](https://github.com/AlchemyCMS/alchemy_cms/pull/2251) ([tvdeyen](https://github.com/tvdeyen))
+- Precompile packs during test setup [#2250](https://github.com/AlchemyCMS/alchemy_cms/pull/2250) ([tvdeyen](https://github.com/tvdeyen))
+- Allow parent page change [#2246](https://github.com/AlchemyCMS/alchemy_cms/pull/2246) ([tvdeyen](https://github.com/tvdeyen))
+- Send language_id to Api::PagesController#index so Pages can be restricted to the language of the page [#2245](https://github.com/AlchemyCMS/alchemy_cms/pull/2245) ([dbwinger](https://github.com/dbwinger))
+
 ## 6.0.0-rc6 (2022-03-05)
 
 - Rework sitemap JS [#2249](https://github.com/AlchemyCMS/alchemy_cms/pull/2249) ([tvdeyen](https://github.com/tvdeyen))

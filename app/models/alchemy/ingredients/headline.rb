@@ -5,7 +5,10 @@ module Alchemy
     # A text headline
     #
     class Headline < Alchemy::Ingredient
+      include DomIds
+
       store_accessor :data,
+        :dom_id,
         :level,
         :size
 
@@ -20,7 +23,7 @@ module Alchemy
       end
 
       def size_options
-        sizes.map { |size| ["H#{size}", size] }
+        sizes.map { |size| [".h#{size}", size] }
       end
 
       private

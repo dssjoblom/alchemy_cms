@@ -70,7 +70,7 @@ module Alchemy
     #   A class instance that will return elements that get rendered.
     #   Use this for your custom element loading logic in views.
     #
-    def render_elements(options = {})
+    def render_elements(options = {}, &blk)
       options = {
         from_page: @page,
         render_format: "html",
@@ -86,11 +86,14 @@ module Alchemy
 
       elements = finder.elements(page_version: page_version)
 
-      buff = []
-      elements.each_with_index do |element, i|
-        buff << render_element(element, options, i + 1)
+      default_rendering = ->(element, i) { render_element(element, options, i + 1) }
+      capture do
+        if block_given?
+          elements.map.with_index(&blk)
+        else
+          elements.map.with_index(&default_rendering)
+        end.join(options[:separator]).html_safe
       end
-      buff.join(options[:separator]).html_safe
     end
 
     # This helper renders a {Alchemy::Element} view partial.
@@ -125,7 +128,7 @@ module Alchemy
     #
     # == Usage
     #
-    #   <%= render_element(Alchemy::Element.available.named(:headline).first) %>
+    #   <%= render_element(Alchemy::Element.published.named(:headline).first) %>
     #
     # @param [Alchemy::Element] element
     #   The element you want to render the view for
@@ -146,11 +149,15 @@ module Alchemy
 
       element.store_page(@page)
 
-      render element, {
-        element: element,
-        counter: counter,
-        options: options,
-      }.merge(options.delete(:locals) || {})
+      render(
+        partial: options[:partial] || element.to_partial_path,
+        object: element,
+        locals: {
+          element: element,
+          counter: counter,
+          options: options.except(:locals, :partial),
+        }.merge(options[:locals] || {}),
+      )
     rescue ActionView::MissingTemplate => e
       warning(%(
         Element view partial not found for #{element.name}.\n
@@ -160,11 +167,12 @@ module Alchemy
     end
 
     # Returns a string for the id attribute of a html element for the given element
+    # @deprecated
     def element_dom_id(element)
-      return "" if element.nil?
-
-      "#{element.name}_#{element.id}".html_safe
+      element&.dom_id
     end
+
+    deprecate element_dom_id: "element.dom_id", deprecator: Alchemy::Deprecation
 
     # Renders the HTML tag attributes required for preview mode.
     def element_preview_code(element)

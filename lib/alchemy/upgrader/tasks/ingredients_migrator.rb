@@ -7,7 +7,7 @@ module Alchemy::Upgrader::Tasks
     include Thor::Actions
 
     no_tasks do
-      def create_ingredients
+      def create_ingredients(verbose: !Rails.env.test?)
         Alchemy::Deprecation.silence do
           elements_with_ingredients = Alchemy::ElementDefinition.all.select { |d| d.key?(:ingredients) }
           if ENV["ONLY"]
@@ -16,44 +16,56 @@ module Alchemy::Upgrader::Tasks
           # eager load all elements that have ingredients defined but no ingredient records yet.
           all_elements = Alchemy::Element
             .named(elements_with_ingredients.map { |d| d[:name] })
-            .includes(contents: { essence: :ingredient_association })
+            .preload(contents: :essence)
             .left_outer_joins(:ingredients).where(alchemy_ingredients: { id: nil })
             .to_a
           elements_with_ingredients.map do |element_definition|
             elements = all_elements.select { |e| e.name == element_definition[:name] }
             if elements.any?
-              puts "-- Creating ingredients for #{elements.count} #{element_definition[:name]}(s)"
+              puts "-- Creating ingredients for #{elements.count} #{element_definition[:name]}(s)" if verbose
               elements.each do |element|
-                Alchemy::Element.transaction do
-                  element_definition[:ingredients].each do |ingredient_definition|
-                    content = element.content_by_name(ingredient_definition[:role])
-                    next unless content
-
-                    essence = content.essence
-                    ingredient = element.ingredients.build(
-                      role: ingredient_definition[:role],
-                      type: Alchemy::Ingredient.normalize_type(ingredient_definition[:type]),
-                    )
-                    belongs_to_associations = essence.class.reflect_on_all_associations(:belongs_to)
-                    if belongs_to_associations.any?
-                      ingredient.related_object = essence.public_send(belongs_to_associations.first.name)
-                    else
-                      ingredient.value = content.ingredient
-                    end
-                    data = ingredient.class.stored_attributes.fetch(:data, []).each_with_object({}) do |attr, d|
-                      d[attr] = essence.public_send(attr)
-                    end
-                    ingredient.data = data
-                    print "."
-                    ingredient.save!
-                    content.destroy!
-                  end
-                end
+                MigrateElementIngredients.call(element)
+                print "." if verbose
               end
-              puts "\n"
-            else
+              puts "\n" if verbose
+            elsif verbose
               puts "-- No #{element_definition[:name]} elements found for migration."
             end
+          end
+        end
+      end
+    end
+
+    class MigrateElementIngredients
+      def self.call(element)
+        Alchemy::Element.transaction do
+          element.definition[:ingredients].each do |ingredient_definition|
+            ingredient = element.ingredients.build(
+              role: ingredient_definition[:role],
+              type: Alchemy::Ingredient.normalize_type(ingredient_definition[:type]),
+            )
+
+            content = element.content_by_name(ingredient_definition[:role])
+            if content
+              essence = content.essence
+              if essence
+                belongs_to_associations = essence.class.reflect_on_all_associations(:belongs_to)
+                if belongs_to_associations.any?
+                  ingredient.related_object = essence.public_send(belongs_to_associations.first.name)
+                else
+                  ingredient.value = content.ingredient
+                end
+                data = ingredient.class.stored_attributes.fetch(:data, []).each_with_object({}) do |attr, d|
+                  next unless essence.respond_to?(attr)
+
+                  d[attr] = essence.public_send(attr)
+                end
+                ingredient.data = data
+              end
+              content.destroy!
+            end
+
+            ingredient.save!
           end
         end
       end

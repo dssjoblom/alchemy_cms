@@ -61,6 +61,8 @@ module Alchemy
 
     has_many :contents, dependent: :destroy, inverse_of: :element
 
+    deprecate contents: :ingredients, deprecator: Alchemy::Deprecation
+
     before_destroy :delete_all_nested_elements
 
     has_many :all_nested_elements,
@@ -70,7 +72,7 @@ module Alchemy
       dependent: :destroy
 
     has_many :nested_elements,
-      -> { order(:position).available },
+      -> { order(:position).published },
       class_name: "Alchemy::Element",
       foreign_key: :parent_element_id,
       dependent: :destroy,
@@ -143,6 +145,18 @@ module Alchemy
         super(element_definition.merge(element_attributes).except(*FORBIDDEN_DEFINITION_ATTRIBUTES))
       end
 
+      # The class responsible for the +dom_id+ of elements.
+      # Defaults to +Alchemy::Element::DomId+.
+      def dom_id_class
+        @_dom_id_class || DomId
+      end
+
+      # Register a custom +DomId+ class responsible for the +dom_id+ of elements.
+      # Defaults to +Alchemy::Element::DomId+.
+      def dom_id_class=(klass)
+        @_dom_id_class = klass
+      end
+
       # This methods does a copy of source and all depending contents and all of their depending essences.
       #
       # == Options
@@ -159,7 +173,7 @@ module Alchemy
       end
 
       def all_from_clipboard(clipboard)
-        return [] if clipboard.nil?
+        return none if clipboard.nil?
 
         where(id: clipboard.collect { |e| e["id"] })
       end
@@ -167,12 +181,19 @@ module Alchemy
       # All elements in clipboard that could be placed on page
       #
       def all_from_clipboard_for_page(clipboard, page)
-        return [] if clipboard.nil? || page.nil?
+        return none if clipboard.nil? || page.nil?
 
-        all_from_clipboard(clipboard).select { |ce|
-          page.available_element_names.include?(ce.name)
-        }
+        all_from_clipboard(clipboard).where(name: page.available_element_names)
       end
+
+      # All elements in clipboard that could be placed as a child of `parent_element`
+      def all_from_clipboard_for_parent_element(clipboard, parent_element)
+        return none if clipboard.nil? || parent_element.nil?
+
+        all_from_clipboard(clipboard).where(name: parent_element.definition["nestable_elements"])
+      end
+
+      deprecate available: :published, deprecator: Alchemy::Deprecation
     end
 
     # Returns next public element from same page.

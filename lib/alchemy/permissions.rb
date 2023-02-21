@@ -41,7 +41,7 @@ module Alchemy
           c.public? && !c.restricted?
         end
 
-        can :read, Alchemy::Element, Alchemy::Element.available.not_restricted do |e|
+        can :read, Alchemy::Element, Alchemy::Element.published.not_restricted do |e|
           e.public? && !e.restricted?
         end
 
@@ -68,7 +68,7 @@ module Alchemy
           c.public?
         end
 
-        can :read, Alchemy::Element, Alchemy::Element.available do |e|
+        can :read, Alchemy::Element, Alchemy::Element.published do |e|
           e.public?
         end
 
@@ -121,7 +121,9 @@ module Alchemy
         can :manage, Alchemy::Node
         can [:read, :url], Alchemy::Picture
         can [:read, :autocomplete], Alchemy::Tag
-        can(:edit_content, Alchemy::Page) { |p| p.editable_by?(@user) }
+        can :edit_content, Alchemy::Page, Alchemy::Page.all do |page|
+          page.editable_by?(@user)
+        end
       end
     end
 
