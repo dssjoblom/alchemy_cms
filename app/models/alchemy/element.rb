@@ -61,7 +61,7 @@ module Alchemy
 
     has_many :contents, dependent: :destroy, inverse_of: :element
 
-    deprecate contents: :ingredients, deprecator: Alchemy::Deprecation
+    # deprecate contents: :ingredients, deprecator: Alchemy::Deprecation
 
     before_destroy :delete_all_nested_elements
 
