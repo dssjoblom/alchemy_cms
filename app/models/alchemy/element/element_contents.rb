@@ -125,7 +125,7 @@ module Alchemy
         definition["contents"]
       end
 
-      deprecate content_definitions: :ingredient_definitions, deprecator: Alchemy::Deprecation
+      # deprecate content_definitions: :ingredient_definitions, deprecator: Alchemy::Deprecation
 
       # Returns the definition for given content_name
       # @deprecated
@@ -138,7 +138,7 @@ module Alchemy
         end
       end
 
-      deprecate content_definition_for: :ingredient_definition_for, deprecator: Alchemy::Deprecation
+      # deprecate content_definition_for: :ingredient_definition_for, deprecator: Alchemy::Deprecation
 
       # Returns an array of all EssenceRichtext contents ids from elements
       #
