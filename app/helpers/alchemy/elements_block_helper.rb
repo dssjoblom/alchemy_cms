@@ -32,12 +32,12 @@ module Alchemy
         renderable = element.ingredient_by_role(name) || Alchemy::Deprecation.silence { content(name) }
         return if renderable.nil?
 
-        if Alchemy::DEPRECATED_ESSENCE_CLASSES.include?(renderable.try(:essence)&.class&.name)
-          Alchemy::Deprecation.warn(
-            "Using a '#{renderable.essence.class.name.demodulize}' content is deprecated. " \
-            "Please use a '#{Alchemy::DEPRECATED_ESSENCE_CLASS_MAPPING[renderable.essence.class.name].demodulize}' ingredient instead."
-          )
-        end
+        # if Alchemy::DEPRECATED_ESSENCE_CLASSES.include?(renderable.try(:essence)&.class&.name)
+        #   Alchemy::Deprecation.warn(
+        #     "Using a '#{renderable.essence.class.name.demodulize}' content is deprecated. " \
+        #     "Please use a '#{Alchemy::DEPRECATED_ESSENCE_CLASS_MAPPING[renderable.essence.class.name].demodulize}' ingredient instead."
+        #   )
+        # end
 
         helpers.render(renderable, {
           options: options,
