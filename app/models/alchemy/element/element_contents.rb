@@ -11,7 +11,7 @@ module Alchemy
         contents_by_name(name).first
       end
 
-      deprecate content_by_name: :ingredient_by_role, deprecator: Alchemy::Deprecation
+      # deprecate content_by_name: :ingredient_by_role, deprecator: Alchemy::Deprecation
 
       # Find first content from element by given essence type.
       # @deprecated
@@ -19,7 +19,7 @@ module Alchemy
         contents_by_type(essence_type).first
       end
 
-      deprecate content_by_type: :ingredient_by_type, deprecator: Alchemy::Deprecation
+      # deprecate content_by_type: :ingredient_by_type, deprecator: Alchemy::Deprecation
 
       # All contents from element by given name.
       # @deprecated
@@ -27,7 +27,7 @@ module Alchemy
         contents.select { |content| content.name == name.to_s }
       end
 
-      deprecate contents_by_name: :ingredients_by_role, deprecator: Alchemy::Deprecation
+      # deprecate contents_by_name: :ingredients_by_role, deprecator: Alchemy::Deprecation
 
       alias_method :all_contents_by_name, :contents_by_name
 
@@ -39,7 +39,7 @@ module Alchemy
         end
       end
 
-      deprecate contents_by_type: :ingredients_by_type, deprecator: Alchemy::Deprecation
+      # deprecate contents_by_type: :ingredients_by_type, deprecator: Alchemy::Deprecation
 
       alias_method :all_contents_by_type, :contents_by_type
 
