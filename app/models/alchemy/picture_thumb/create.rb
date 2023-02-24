@@ -17,9 +17,9 @@ module Alchemy
         def call(variant, signature, uid)
           return if !variant.picture.valid?
 
-          puts "PIC THUMB #{signature}"
+          Rails.logger.warn "PIC THUMB #{signature}"
           exist = Alchemy::PictureThumb.exist?(signature: signature)
-          puts "PIC EXIST? #{exist}"
+          Rails.logger.warn "PIC EXIST? #{exist}"
 
           # create the thumb before storing
           # to prevent db race conditions
