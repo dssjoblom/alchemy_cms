@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 module Alchemy
+  extend Alchemy::SearchableResource
+
   def self.table_name_prefix
     "alchemy_"
   end
